@@ -1,13 +1,16 @@
 package org.persistence.savers
 
 import org.model.Space
-import org.persistence.IDatabase
+import org.persistence.H2
 
-class SpaceSaver(private var database: IDatabase) : Saver<Space> {
+class SpaceSaver(private var database: H2) : Saver<Space> {
   override fun save(value: Space) {
-    var id = database.insert(getIdString = "SELECT NEXT VALUE FOR space_id_seq"){
-        "INSERT INTO spaces(space_id, name, owner) VALUES (${it}, '${value.name}', '${value.owner}')"
-    }
+    val id = database.insert(
+      idQuery = "SELECT NEXT VALUE FOR space_id_seq",
+      placeHolderQuery = "INSERT INTO spaces(id, name, owner) VALUES (?, ?, ?)",
+      value.name,
+      value.owner
+    )
       value.id = id
   }
 }

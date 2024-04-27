@@ -1,5 +1,5 @@
 CREATE TABLE spaces(
-                       space_id INT PRIMARY KEY,
+                       id INT PRIMARY KEY,
                        name VARCHAR(255) NOT NULL,
                        owner VARCHAR(50) NOT NULL
 );
@@ -7,7 +7,7 @@ CREATE TABLE spaces(
 CREATE SEQUENCE space_id_seq;
 
 CREATE TABLE messages(
-                         space_id INT NOT NULL REFERENCES spaces(space_id),
+                         space_id INT NOT NULL REFERENCES spaces(id),
                          msg_id INT PRIMARY KEY,
                          author VARCHAR(30) NOT NULL,
                          msg_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

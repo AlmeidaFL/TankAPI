@@ -4,7 +4,6 @@ import org.controller.SpaceController
 import org.core.services.SpaceService
 import org.json.JSONObject
 import org.persistence.DatabaseCreator
-import org.persistence.Databases
 import org.persistence.repositories.SpaceRepository
 import org.persistence.savers.SpaceSaver
 import spark.Spark.*
@@ -16,9 +15,9 @@ fun main() {
 class Main() {
 
   fun run() {
-    var database = DatabaseCreator().createDatabase(Databases.H2, "/schemas.sql")
+    val database = DatabaseCreator.createDatabase("/schemas.sql")
 
-    var spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
+    val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
 
     post("/spaces", spaceController::createSpace)
 
