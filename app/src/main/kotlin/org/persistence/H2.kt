@@ -1,8 +1,8 @@
 package org.persistence
 
+import java.util.*
 import org.dalesbred.Database
 import org.h2.jdbcx.JdbcConnectionPool
-import java.util.*
 
 class H2 {
   var database: Database? = null
@@ -10,16 +10,16 @@ class H2 {
     set(value) {
       if (database == null) field = value
     }
-   var schema = ""
+  var schema = ""
 
-  fun insert(idQuery: String, placeHolderQuery: String, vararg values: String): Long{
+  fun insert(idQuery: String, placeHolderQuery: String, vararg values: String): Long {
     var id = -1L
     try {
       database!!.withTransaction {
         id = database!!.findUniqueLong(idQuery)
         database!!.updateUnique(placeHolderQuery, id, *values)
       }
-    }catch (e: Exception){
+    } catch (e: Exception) {
       id = -1
       throw e
     }
@@ -27,9 +27,11 @@ class H2 {
   }
 
   internal fun initialize() {
-    val datasource = JdbcConnectionPool.create("jdbc:h2:mem:tank", "tank", "password")
+    var datasource = JdbcConnectionPool.create("jdbc:h2:mem:tank", "tank", "password")
     database = Database.forDataSource(datasource)
     database!!.update(schema)
+    datasource = JdbcConnectionPool.create("jdbc:h2:mem:tank", "tank_api_user", "password")
+    database = Database.forDataSource(datasource)
   }
 }
 
