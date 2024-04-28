@@ -24,6 +24,11 @@ class Main() {
     setEndpoints(spaceController)
     setExceptionErrors()
     setGeneralErrors()
+    removeUnsafeHeaders()
+  }
+
+  private fun removeUnsafeHeaders() {
+    afterAfter { _, response -> response.header("Server", "") }
   }
 
   private fun setGeneralErrors() {
