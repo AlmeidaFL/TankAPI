@@ -29,6 +29,7 @@ dependencies {
     implementation("org.dalesbred:dalesbred:1.3.5")
     implementation("org.json:json:20200518")
     implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-simple:1.7.30")
 }
 
 testing {
@@ -49,3 +50,4 @@ application {
     // Define the main class for the application.
     mainClass = "org.example.AppKt"
 }
+
