@@ -8,9 +8,11 @@ import org.json.JSONObject
 import org.persistence.DatabaseCreator
 import org.persistence.repositories.SpaceRepository
 import org.persistence.savers.SpaceSaver
+import org.web.*
 import spark.Request
 import spark.Response
 import spark.Spark.*
+import spark.kotlin.before
 
 fun main() {
   var main = Main().run()
@@ -21,6 +23,16 @@ class Main() {
   fun run() {
     val database = DatabaseCreator.createDatabase("/schemas.sql")
     val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
+
+    // Filters
+    before {
+      if (this.requestMethod() != HttpMethod.POST.name &&
+              this.request.contentType() != MediaTypes.JSON.name
+      ) {
+        halt(415, JSONObject().put("error", "Only application/json supported").toString())
+      }
+    }
+
     setEndpoints(spaceController)
     setExceptionErrors()
     setGeneralErrors()
@@ -29,6 +41,17 @@ class Main() {
 
   private fun removeUnsafeHeaders() {
     afterAfter { _, response -> response.header("Server", "") }
+    afterAfter { _, response -> response.header("X-XSS-Protection", "0") } // OWASP recommendation
+    afterAfter { _, response -> response.header("X-Content-Type-Options", "no-sniff") } // Avoid XSS
+    afterAfter { _, response -> response.header("X-Frame-Options", "DENY") } // Avoid XSS
+    afterAfter { _, response -> response.header("Cache-Control", "no-store") }
+    afterAfter { _, response ->
+      response.header(
+          "Content-Security-Policy",
+          "default-src 'none'; frame-ancestors 'none'; sandbox"
+      )
+    } // Avoid loading script, response into iframe
+    // and disable script execution
   }
 
   private fun setGeneralErrors() {
@@ -51,6 +74,6 @@ class Main() {
 
   private fun badRequest(exception: Exception, request: Request, response: Response) {
     response.status(400)
-    response.body("{\"error\": \"${exception.message}\"}")
+    response.body(JSONObject().put("error", exception.message).toString())
   }
 }

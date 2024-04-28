@@ -12,12 +12,17 @@ import spark.Response
 
 class SpaceController(private var spaceService: SpaceService) {
   fun createSpace(request: Request, response: Response): JSONObject {
-    var resource = Resource(request.body())
+    var resource: Resource?
+    try {
+      resource = Resource(request.body())
+    } catch (e: Exception) {
+      throw IllegalArgumentException("Resource is in bad format")
+    }
     var space = SpaceConverter().convertToLeft(resource)
-
     UserValidator().validate(User(space.owner))
     SpaceValidator().validate(space)
     spaceService.saveSpace(space)
+
     response.status(201)
     response.header("Location", "/spaces/${space.id}")
 
