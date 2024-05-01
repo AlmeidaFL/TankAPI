@@ -5,7 +5,7 @@ import org.dalesbred.Database
 import org.h2.jdbcx.JdbcConnectionPool
 
 class H2 {
-  var database: Database? = null
+  private var database: Database? = null
     get() = field
     set(value) {
       if (database == null) field = value

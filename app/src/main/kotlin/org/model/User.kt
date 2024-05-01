@@ -1,3 +1,3 @@
 package org.model
 
-data class User(var name: String)
+abstract class User(var name: String)

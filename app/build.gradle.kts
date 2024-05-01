@@ -30,6 +30,7 @@ dependencies {
     implementation("org.json:json:20200518")
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("org.slf4j:slf4j-simple:1.7.30")
+    implementation("com.lambdaworks:scrypt:1.4.0")
 }
 
 testing {
@@ -50,4 +51,3 @@ application {
     // Define the main class for the application.
     mainClass = "org.example.AppKt"
 }
-

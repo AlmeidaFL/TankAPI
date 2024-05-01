@@ -16,8 +16,14 @@ CREATE TABLE messages(
 
 CREATE SEQUENCE msg_id_seq;
 
+CREATE TABLE users(
+                         id VARCHAR(30) NOT NULL,
+                         password_hash VARCHAR(255) NOT NULL
+)
+
 CREATE INDEX msg_timestamp_idx ON messages(msg_time);
 CREATE UNIQUE INDEX space_name_idx ON spaces(name);
 
 CREATE USER tank_api_user PASSWORD 'password';
-GRANT SELECT, INSERT ON spaces, messages TO tank_api_user;
+GRANT SELECT, INSERT ON spaces, messages, users TO tank_api_user;
+

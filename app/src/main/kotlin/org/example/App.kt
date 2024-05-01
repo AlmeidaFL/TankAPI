@@ -1,5 +1,6 @@
 package org.example
 
+import com.google.common.util.concurrent.RateLimiter
 import org.controller.SpaceController
 import org.core.services.SpaceService
 import org.dalesbred.result.EmptyResultException
@@ -21,6 +22,7 @@ fun main() {
 class Main() {
 
   fun run() {
+    setRateLimiter()
     val database = DatabaseCreator.createDatabase("/schemas.sql")
     val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
 
@@ -32,15 +34,25 @@ class Main() {
         halt(415, JSONObject().put("error", "Only application/json supported").toString())
       }
     }
-
     setEndpoints(spaceController)
     setExceptionErrors()
     setGeneralErrors()
     removeUnsafeHeaders()
   }
 
+  private fun setRateLimiter() {
+    val rateLimiter = RateLimiter.create(10.0)
+    before {
+      if (!rateLimiter.tryAcquire()) {
+        this.response.header("Retry-After", "2")
+        halt(429)
+      }
+    }
+  }
+
   private fun removeUnsafeHeaders() {
     afterAfter { _, response -> response.header("Server", "") }
+    afterAfter { _, response -> response.type("application/json;charset=utf-8") }
     afterAfter { _, response -> response.header("X-XSS-Protection", "0") } // OWASP recommendation
     afterAfter { _, response -> response.header("X-Content-Type-Options", "no-sniff") } // Avoid XSS
     afterAfter { _, response -> response.header("X-Frame-Options", "DENY") } // Avoid XSS
@@ -61,15 +73,13 @@ class Main() {
 
   private fun setEndpoints(spaceController: SpaceController) {
     post("/spaces", spaceController::createSpace)
-    after("/") { request, response -> response.type("application/json") }
+    after("/") { _, response -> response.type("application/json") }
   }
 
   private fun setExceptionErrors() {
     exception(IllegalArgumentException::class.java, ::badRequest)
     exception(JSONException::class.java, ::badRequest)
-    exception(EmptyResultException::class.java) { exception, request, response ->
-      response.status(404)
-    }
+    exception(EmptyResultException::class.java) { _, _, response -> response.status(404) }
   }
 
   private fun badRequest(exception: Exception, request: Request, response: Response) {

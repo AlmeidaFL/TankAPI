@@ -9,20 +9,3 @@ class Resource(private val json: String) {
     return jsonObject.getString(key)
   }
 }
-
-class JsonBuilder{
-  val json = StringBuilder()
-
-  init{
-    json.append("{"))
-  }
-
-  fun withPair(key: String, value: String){
-    json.append("\"$key:\": \"$value\"")
-  }
-
-  fun getJson(): String{
-    json.append("}") 
-    return json.toString()
-  }
-}
