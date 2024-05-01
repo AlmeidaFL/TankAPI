@@ -2,13 +2,14 @@ package org.example
 
 import com.google.common.util.concurrent.RateLimiter
 import org.controller.SpaceController
-import org.core.services.SpaceService
+import org.controller.UserController
+import org.core.services.*
 import org.dalesbred.result.EmptyResultException
 import org.json.JSONException
 import org.json.JSONObject
 import org.persistence.DatabaseCreator
-import org.persistence.repositories.SpaceRepository
-import org.persistence.savers.SpaceSaver
+import org.persistence.repositories.*
+import org.persistence.savers.*
 import org.web.*
 import spark.Request
 import spark.Response
@@ -25,6 +26,7 @@ class Main() {
     setRateLimiter()
     val database = DatabaseCreator.createDatabase("/schemas.sql")
     val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
+    val userController = UserController(UserService(ApiUserRepository(ApiUserSaver(database))))
 
     // Filters
     before {
@@ -34,7 +36,7 @@ class Main() {
         halt(415, JSONObject().put("error", "Only application/json supported").toString())
       }
     }
-    setEndpoints(spaceController)
+    setEndpoints(spaceController, userController)
     setExceptionErrors()
     setGeneralErrors()
     removeUnsafeHeaders()
@@ -71,8 +73,9 @@ class Main() {
     notFound(JSONObject().put("error", "not found").toString())
   }
 
-  private fun setEndpoints(spaceController: SpaceController) {
+  private fun setEndpoints(spaceController: SpaceController, userController: UserController) {
     post("/spaces", spaceController::createSpace)
+    post("/users", userController::createUser)
     after("/") { _, response -> response.type("application/json") }
   }
 

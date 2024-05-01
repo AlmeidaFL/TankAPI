@@ -1,4 +1,4 @@
-package org.persistence
+package org.persistence.repositories
 
 import org.model.ApiUser
 import org.persistence.savers.ApiUserSaver

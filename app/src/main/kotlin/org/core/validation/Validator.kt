@@ -1,5 +1,5 @@
 package org.core.validation
 
-interface Validator<T> {
-  fun validate(input: T)
+interface Validator<out T> {
+  fun validate(input: @UnsafeVariance T)
 }
