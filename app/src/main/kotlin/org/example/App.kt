@@ -1,8 +1,8 @@
 package org.example
 
 import com.google.common.util.concurrent.RateLimiter
+import org.controller.ApiUserController
 import org.controller.SpaceController
-import org.controller.UserController
 import org.core.services.*
 import org.dalesbred.result.EmptyResultException
 import org.json.JSONException
@@ -26,7 +26,8 @@ class Main() {
     setRateLimiter()
     val database = DatabaseCreator.createDatabase("/schemas.sql")
     val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
-    val userController = UserController(UserService(ApiUserRepository(ApiUserSaver(database))))
+    val userService = UserService(ApiUserRepository(ApiUserSaver(database)))
+    val userController = ApiUserController(userService)
 
     // Filters
     before {
@@ -36,6 +37,7 @@ class Main() {
         halt(415, JSONObject().put("error", "Only application/json supported").toString())
       }
     }
+    spark.kotlin.before(userService::authenticate)
     setEndpoints(spaceController, userController)
     setExceptionErrors()
     setGeneralErrors()
@@ -73,7 +75,7 @@ class Main() {
     notFound(JSONObject().put("error", "not found").toString())
   }
 
-  private fun setEndpoints(spaceController: SpaceController, userController: UserController) {
+  private fun setEndpoints(spaceController: SpaceController, userController: ApiUserController) {
     post("/spaces", spaceController::createSpace)
     post("/users", userController::createUser)
     after("/") { _, response -> response.type("application/json") }

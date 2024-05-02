@@ -9,7 +9,8 @@ import org.web.Resource
 import spark.Request
 import spark.Response
 
-class UserController(private val userService: UserService) {
+class ApiUserController(private val userService: UserService) {
+
   fun createUser(request: Request, response: Response): JSONObject {
     var apiUser = ApiUserConverter().convertToLeft(Resource(request.body()))
     ApiUserCompound.validate(apiUser)
@@ -18,8 +19,8 @@ class UserController(private val userService: UserService) {
     userService.saveUser(apiUser)
 
     response.status(201)
-    response.header("Location", "/users/${apiUser.userName}")
+    response.header("Location", "/users/${apiUser.name}")
 
-    return JSONObject().put("username", apiUser.userName)
+    return JSONObject().put("username", apiUser.name)
   }
 }

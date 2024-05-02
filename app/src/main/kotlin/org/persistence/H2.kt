@@ -2,6 +2,7 @@ package org.persistence
 
 import java.util.*
 import org.dalesbred.Database
+import org.dalesbred.integration.kotlin.findOptional
 import org.h2.jdbcx.JdbcConnectionPool
 
 class H2 {
@@ -24,6 +25,10 @@ class H2 {
       throw e
     }
     return id
+  }
+
+  fun <T> query(placeHolderQuery: String, vararg values: Any, cl: Class<T>): Optional<T>{
+    return database!!.findOptional(cl, placeHolderQuery, values)
   }
 
   internal fun initialize() {
