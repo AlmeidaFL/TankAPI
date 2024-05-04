@@ -13,6 +13,10 @@ class H2 {
     }
   var schema = ""
 
+  fun insert(placeHolderQuery: String, vararg values: String) {
+    database!!.withTransaction { database!!.updateUnique(placeHolderQuery, *values) }
+  }
+
   fun insert(idQuery: String, placeHolderQuery: String, vararg values: String): Long {
     var id = -1L
     try {
@@ -27,7 +31,7 @@ class H2 {
     return id
   }
 
-  fun <T> query(placeHolderQuery: String, vararg values: Any, cl: Class<T>): Optional<T>{
+  fun <T> query(placeHolderQuery: String, vararg values: Any, cl: Class<T>): Optional<T> {
     return database!!.findOptional(cl, placeHolderQuery, values)
   }
 

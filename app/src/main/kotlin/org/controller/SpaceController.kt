@@ -6,6 +6,7 @@ import org.core.validation.SpaceValidator
 import org.core.validation.UserValidator
 import org.json.*
 import org.model.SpaceCreator
+import org.utils.AuthenticationUtils
 import org.web.Resource
 import spark.Request
 import spark.Response
@@ -19,6 +20,7 @@ class SpaceController(private var spaceService: SpaceService) {
       throw IllegalArgumentException("Resource is in bad format")
     }
     var space = SpaceConverter().convertToLeft(resource)
+    AuthenticationUtils.validateAuthentication(space.owner, request.attribute("subject"))
     UserValidator().validate(SpaceCreator(space.owner))
     SpaceValidator().validate(space)
     spaceService.saveSpace(space)

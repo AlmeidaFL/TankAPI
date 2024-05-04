@@ -17,9 +17,9 @@ CREATE TABLE messages(
 CREATE SEQUENCE msg_id_seq;
 
 CREATE TABLE users(
-                         id VARCHAR(30) NOT NULL,
+                         id VARCHAR(30) PRIMARY KEY,
                          password_hash VARCHAR(255) NOT NULL
-)
+);
 
 CREATE INDEX msg_timestamp_idx ON messages(msg_time);
 CREATE UNIQUE INDEX space_name_idx ON spaces(name);

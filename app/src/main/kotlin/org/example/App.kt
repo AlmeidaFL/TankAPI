@@ -3,6 +3,7 @@ package org.example
 import com.google.common.util.concurrent.RateLimiter
 import org.controller.ApiUserController
 import org.controller.SpaceController
+import org.core.exceptions.UserNotAuthenticatedException
 import org.core.services.*
 import org.dalesbred.result.EmptyResultException
 import org.json.JSONException
@@ -85,10 +86,11 @@ class Main() {
     exception(IllegalArgumentException::class.java, ::badRequest)
     exception(JSONException::class.java, ::badRequest)
     exception(EmptyResultException::class.java) { _, _, response -> response.status(404) }
+    exception(UserNotAuthenticatedException::class.java, ::badRequest)
   }
 
   private fun badRequest(exception: Exception, request: Request, response: Response) {
     response.status(400)
-    response.body(JSONObject().put("error", exception.message).toString())
+    response.body(JSONObject().put("error", "${exception.message}" + "\n").toString())
   }
 }

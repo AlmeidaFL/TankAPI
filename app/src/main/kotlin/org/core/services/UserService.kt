@@ -23,7 +23,8 @@ class UserService(val repository: ApiUserRepository) {
       return
     }
 
-    val base64Credentials = basicAuthenticationHeader.substring(BASIC.length + 2)
+    val credentialsOffset = 1
+    val base64Credentials = basicAuthenticationHeader.substring(BASIC.length + credentialsOffset)
     val splitCredentials =
         String(Base64.decode(base64Credentials.toCharArray()), StandardCharsets.UTF_8).split(":")
 
@@ -35,7 +36,5 @@ class UserService(val repository: ApiUserRepository) {
       request.attribute("subject", userId)
       return
     }
-
-    throw Exception("Password error")
   }
 }
