@@ -6,8 +6,9 @@ brun:
 	./gradlew build
 	./gradlew run
 
-create_space:
-	curl -u $(user):$(password) -d '{"name": "$(space_name)", "owner": "$(user)"}' -H 'Content-type: application/json' http://localhost:4567/spaces
+
+create_space: 
+	curl --cacert "$$(mkcert -CAROOT)/rootCA.pem" -u $(user):$(password) -d '{"name": "$(space_name)", "owner": "$(user)"}' -H 'Content-type: application/json' https://localhost:4567/spaces
 
 create_user: 
-	curl -d '{"username":"$(user)","password":"$(password)"}' -H 'Content-Type: application/json' http://localhost:4567/users
+	curl --cacert "$$(mkcert -CAROOT)/rootCA.pem" -d '{"username":"$(user)","password":"$(password)"}' -H 'Content-Type: application/json' https://localhost:4567/users
