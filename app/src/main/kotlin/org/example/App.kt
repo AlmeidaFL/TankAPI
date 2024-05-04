@@ -16,6 +16,7 @@ import spark.Request
 import spark.Response
 import spark.Spark.*
 import spark.kotlin.before
+import spark.kotlin.secure
 
 fun main() {
   var main = Main().run()
@@ -24,6 +25,7 @@ fun main() {
 class Main() {
 
   fun run() {
+    secureCommunication()
     setRateLimiter()
     val database = DatabaseCreator.createDatabase("/schemas.sql")
     val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
@@ -43,6 +45,10 @@ class Main() {
     setExceptionErrors()
     setGeneralErrors()
     removeUnsafeHeaders()
+  }
+
+  private fun secureCommunication() {
+    secure("localhost.p12", "changeit", null, null)
   }
 
   private fun setRateLimiter() {
@@ -91,6 +97,6 @@ class Main() {
 
   private fun badRequest(exception: Exception, request: Request, response: Response) {
     response.status(400)
-    response.body(JSONObject().put("error", "${exception.message}" + "\n").toString())
+    response.body(JSONObject().put("error", exception.message).toString())
   }
 }
