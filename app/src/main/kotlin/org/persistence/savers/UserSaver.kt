@@ -11,7 +11,7 @@ class ApiUserSaver(private val database: H2) : Saver<ApiUser> {
                                                                 placeHolderQuery =
                                                                                                 "INSERT INTO users VALUES(?,?)",
                                                                 value.name,
-                                                                value.password
+                                                                value.password,
                                 )
                 }
 

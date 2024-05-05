@@ -8,4 +8,8 @@ class Resource(private val json: String) {
   fun getString(key: String): String {
     return jsonObject.getString(key)
   }
+
+  fun getNumber(key: String): Number {
+    return jsonObject.getNumber(key)
+  }
 }
