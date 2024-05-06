@@ -12,3 +12,6 @@ create_space:
 
 create_user: 
 	curl --cacert "$$(mkcert -CAROOT)/rootCA.pem" -d '{"username":"$(user)","password":"$(password)"}' -H 'Content-Type: application/json' https://localhost:4567/users
+
+get_log_hour:
+	curl --cacert "$$(mkcert -CAROOT)/rootCA.pem" -H 'Content-Type: application/json' https://localhost:4567/logs | jq

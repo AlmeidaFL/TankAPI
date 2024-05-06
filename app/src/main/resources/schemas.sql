@@ -28,7 +28,10 @@ CREATE TABLE audit_log (
   user_id VARCHAR(30) NULL,
   status INT NULL,
   time TIMESTAMP NOT NULL
-) CREATE SEQUENCE audit_log_seq CREATE INDEX msg_timestamp_idx ON messages (msg_time);
+);
+
+CREATE SEQUENCE audit_log_seq;
+CREATE INDEX msg_timestamp_idx ON messages (msg_time);
 
 CREATE UNIQUE INDEX space_name_idx ON spaces (name);
 

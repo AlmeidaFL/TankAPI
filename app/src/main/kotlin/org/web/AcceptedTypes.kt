@@ -1,6 +1,6 @@
 package org.web
 
-enum class MediaTypes(name: String) {
+enum class MediaTypes(val type: String) {
   JSON("application/json")
 }
 

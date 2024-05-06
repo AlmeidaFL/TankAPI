@@ -2,6 +2,7 @@ package org.core.services
 
 import com.lambdaworks.codec.Base64
 import com.lambdaworks.crypto.SCryptUtil
+import org.core.exceptions.UserNotAuthenticatedException
 import java.nio.charset.StandardCharsets
 import kotlin.check
 import org.model.ApiUser

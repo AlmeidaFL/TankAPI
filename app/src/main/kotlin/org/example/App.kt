@@ -26,7 +26,7 @@ fun main() {
 class Main() {
 
     fun run() {
-        addTlsSuport()
+        addTlsSupport()
         setRateLimiter()
         val database = DatabaseCreator.createDatabase("/schemas.sql")
         val spaceController = SpaceController(SpaceService(SpaceRepository(SpaceSaver(database))))
@@ -51,7 +51,7 @@ class Main() {
         // Filters
         before {
             if (this.requestMethod() != HttpMethod.POST.name &&
-                this.request.contentType() != MediaTypes.JSON.name
+                            this.request.contentType() != MediaTypes.JSON.type
             ) {
                 halt(415, JSONObject().put("error", "Only application/json supported").toString())
             }
@@ -60,8 +60,8 @@ class Main() {
         spark.kotlin.before(auditController::logRequestEntry)
     }
 
-    private fun addTlsSuport() {
-        secure("localhost.p12", "changeit", null, null)
+    private fun addTlsSupport() {
+        secure("app/localhost.p12", "changeit", null, null)
     }
 
     private fun setRateLimiter() {
@@ -77,18 +77,23 @@ class Main() {
     private fun addProtectionHeaders() {
         afterAfter { _, response -> response.header("Server", "") }
         afterAfter { _, response -> response.type("application/json;charset=utf-8") }
-        afterAfter { _, response -> response.header("X-XSS-Protection", "0") } // OWASP recommendation
-        afterAfter { _, response -> response.header("X-Content-Type-Options", "no-sniff") } // Avoid XSS
+        afterAfter { _, response ->
+            response.header("X-XSS-Protection", "0")
+        } // OWASP recommendation
+        afterAfter { _, response ->
+            response.header("X-Content-Type-Options", "no-sniff")
+        } // Avoid XSS
         afterAfter { _, response -> response.header("X-Frame-Options", "DENY") } // Avoid XSS
         afterAfter { _, response -> response.header("Cache-Control", "no-store") }
         afterAfter { _, response ->
             response.header(
-                "Content-Security-Policy",
-                "default-src 'none'; frame-ancestors 'none'; sandbox"
+                    "Content-Security-Policy",
+                    "default-src 'none'; frame-ancestors 'none'; sandbox"
             )
         } // Avoid loading script, response into iframe
         // and disable script execution
-        // afterAfter {_, response -> response.header("Strict-Transport-Security", "max-age:3153600")}
+        // afterAfter {_, response -> response.header("Strict-Transport-Security",
+        // "max-age:3153600")}
     }
 
     private fun setGeneralErrors() {
@@ -97,9 +102,9 @@ class Main() {
     }
 
     private fun setEndpoints(
-        spaceController: SpaceController,
-        userController: ApiUserController,
-        auditController: AuditController
+            spaceController: SpaceController,
+            userController: ApiUserController,
+            auditController: AuditController
     ) {
         post("/spaces", spaceController::createSpace)
         post("/users", userController::createUser)
