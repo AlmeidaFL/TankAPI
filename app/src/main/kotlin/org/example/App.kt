@@ -34,7 +34,7 @@ class Main() {
         val userController = ApiUserController(userService)
         val auditController = AuditController(AuditLogService(AuditLogDAO(database)))
 
-        addBefore(auditController, userService)
+        addBefore(auditController, userService, userController)
         setEndpoints(spaceController, userController, auditController)
         setExceptionErrors()
         setGeneralErrors()
@@ -46,7 +46,11 @@ class Main() {
         afterAfter(auditController::logRequestExit)
     }
 
-    private fun addBefore(auditController: AuditController, userService: UserService) {
+    private fun addBefore(
+            auditController: AuditController,
+            userService: UserService,
+            userController: ApiUserController
+    ) {
 
         // Filters
         before {
@@ -58,6 +62,7 @@ class Main() {
         }
         spark.kotlin.before(userService::authenticate)
         spark.kotlin.before(auditController::logRequestEntry)
+        before("spaces", userController::requiresAuthentication)
     }
 
     private fun addTlsSupport() {
@@ -75,7 +80,7 @@ class Main() {
     }
 
     private fun addProtectionHeaders() {
-        afterAfter { _, response -> response.header("Server", "") }
+        afterAfter { _, response -> response.header("Server", " ") }
         afterAfter { _, response -> response.type("application/json;charset=utf-8") }
         afterAfter { _, response ->
             response.header("X-XSS-Protection", "0")
